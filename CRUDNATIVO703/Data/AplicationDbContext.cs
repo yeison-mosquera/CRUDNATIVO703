@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using CRUDNATIVO703.Models;
 
 namespace CRUDNATIVO703.Data
 {
@@ -12,6 +13,7 @@ namespace CRUDNATIVO703.Data
 
         }
         public DbSet<Models.Libro> Libros { get; set; } // DbSet para la entidad Libro
+        public DbSet<CRUDNATIVO703.Models.Cliente> Cliente { get; set; } = default!;
 
     }
    

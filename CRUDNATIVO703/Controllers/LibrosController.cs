@@ -5,77 +5,98 @@ using Microsoft.AspNetCore.Mvc;
 namespace CRUDNATIVO703.Controllers
 {
     public class LibrosController : Controller
-
-
     {
-        //Llamar AplicationmDbContext
+        private readonly AplicationDbContext _context;
 
-        private readonly Data.AplicationDbContext _context;
-
-
-        //Constructor
-
+        // Constructor
         public LibrosController(AplicationDbContext context)
         {
             _context = context;
         }
+
+        // INDEX
         public IActionResult Index()
         {
             IEnumerable<Libro> ListLibros = _context.Libros;
             return View(ListLibros);
         }
 
+        // CREATE GET
         public IActionResult Create()
         {
             return View();
         }
 
+        // CREATE POST
         [HttpPost]
-
-        public IActionResult Create(Libro libro)// Resivimos el parametro de libro
+        public IActionResult Create(Libro libro)
         {
-            if (ModelState.IsValid) // Validamos el modelo
+            if (ModelState.IsValid)
             {
-                _context.Libros.Add(libro); //Guardamos los datos 
-                _context.SaveChanges(); //Confirmamos los cambios
+                _context.Libros.Add(libro);
+                _context.SaveChanges();
 
-                TempData["mensaje"] = "El libro se ha creado correctamente"; //Mensaje de confirmacion
-
-                return RedirectToAction("Index"); //Redirigimos a la vista principal
+                TempData["mensaje"] = "El libro se ha creado correctamente";
+                return RedirectToAction("Index");
             }
-            return View(); //Retornamos la vista 
+            return View();
         }
 
-        public IActionResult Edit(int? id) //Recibimos el parametro del id
+        // EDIT GET
+        public IActionResult Edit(int? id)
         {
-         if (id== null || id == 0)
-            {
-                return NotFound(); //Si el id es nulo o 0 retornamos NotFound
-            }
+            if (id == null || id == 0)
+                return NotFound();
 
-         //Consular el libro 
+            var libro = _context.Libros.Find(id);
+            if (libro == null)
+                return NotFound();
 
-
-         var Libro = _context.Libros.Find(id); //Buscamos el libro por el id
-
-        if (Libro == null)
-                {
-                    return NotFound(); //Si no se encuentra el libro retornamos NotFound
-            }
-
-           return View(Libro); //Retornamos la vista con el libro encontrado
+            return View(libro);
         }
+
+        // EDIT POST
         [HttpPost]
-        public IActionResult Edit(Libro libro) //Recibimos el parametro del libro
+        public IActionResult Edit(Libro libro)
         {
-            if (ModelState.IsValid) //Validamos el modelo
+            if (ModelState.IsValid)
             {
-                _context.Libros.Update(libro); //Actualizamos el libro
-                _context.SaveChanges(); //Confirmamos los cambios
-                TempData["mensaje"] = "El libro se ha editado correctamente"; //Mensaje de confirmacion
-                return RedirectToAction("Index"); //Redirigimos a la vista principal
+                _context.Libros.Update(libro);
+                _context.SaveChanges();
+
+                TempData["mensaje"] = "El libro se ha editado correctamente";
+                return RedirectToAction("Index");
             }
-            return View(); //Retornamos la vista con el libro editado
+            return View();
+        }
+
+        // DELETE GET
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+                return NotFound();
+
+            var libro = _context.Libros.Find(id);
+            if (libro == null)
+                return NotFound();
+
+            return View(libro);
+        }
+
+        // DELETE POST
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var libro = _context.Libros.Find(id);
+            if (libro == null)
+                return NotFound();
+
+            _context.Libros.Remove(libro);
+            _context.SaveChanges();
+
+            TempData["mensaje"] = "El libro se ha eliminado correctamente";
+            return RedirectToAction("Index");
         }
     }
 }
